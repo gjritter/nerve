@@ -1,4 +1,3 @@
-var sys = require('sys');
 var http = require('http');
 
 Array.prototype.serve = function(port, host) {
