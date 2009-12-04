@@ -14,8 +14,9 @@ Array.prototype.serve = function(port, host) {
 		res.send_html = send_html;
 		for(var i = 0; i < that.length; i++) {
 			var matcher = that[i][0], handler = that[i][1];
-			if(that[i][0].test(req.uri.path)) {
-				that[i][1](req, res);
+			var match = matcher(req.uri.path);
+			if(match) {
+				handler.apply(null, [req, res].concat(match.slice(1)));
 				return;
 			}
 		}
