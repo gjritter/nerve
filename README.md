@@ -2,7 +2,11 @@
 
 A microframework for [node.js](http://nodejs.org).
 
-## Example
+## Examples
+
+[Nodewiki](http://github.com/gjritter/nodewiki) is a tiny wiki built using Nerve and the redis-node-client.
+
+This is a sample application that makes use of Nerve's regular-expression URI path matching to pass a "name" parameter from the URI into a handler function. This can be extended to any number of named arguments in the handler function.
 
 	require("./nerve");
 	
@@ -10,7 +14,4 @@ A microframework for [node.js](http://nodejs.org).
 		[/^\/hello\/(\w+)$/, function(req, res, name) {
 			res.send_html("Hello, " + name + "!");
 		}],
-		[/^\/goodbye$/, function(req, res) {
-			res.send_html("Goodbye!");
-		}]
 	].serve(8000);
