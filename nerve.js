@@ -30,22 +30,24 @@ del = function(regexp) {
 	}
 
 	function create(app) {
+		function request_handler(req, res) {
+			res.send_html = send_html;
+			for(var i = 0; i < app.length; i++) {
+				var matcher = app[i][0], handler = app[i][1],
+					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
+				if(match) {
+					handler.apply(null, [req, res].concat(match.slice(1)));
+					return;
+				}
+			}
+			res.send_html('<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', 404);
+		}
+
 		return {
 			serve: function(port, host) {
-				function request_handler(req, res) {
-					res.send_html = send_html;
-					for(var i = 0; i < app.length; i++) {
-						var matcher = app[i][0], handler = app[i][1],
-							match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
-						if(match) {
-							handler.apply(null, [req, res].concat(match.slice(1)));
-							return;
-						}
-					}
-					res.send_html('<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', 404);
-				}
-
 				http.createServer(request_handler).listen(port, host);
+				
+				return this;
 			}
 		}
 	};
