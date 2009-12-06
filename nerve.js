@@ -1,3 +1,4 @@
+var sys = require('sys');
 var http = require('http');
 
 get = function(regexp) {
@@ -36,7 +37,11 @@ del = function(regexp) {
 				var matcher = app[i][0], handler = app[i][1],
 					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
 				if(match) {
-					handler.apply(null, [req, res].concat(match.slice(1)));
+					try {
+						handler.apply(null, [req, res].concat(match.slice(1)));
+					} catch(e) {
+						res.send_html('<html><head><title>Exception</title></head><body><h1>Exception</h1><pre>' + sys.inspect(e) + '</pre></body></html>', 501);
+					}
 					return;
 				}
 			}
