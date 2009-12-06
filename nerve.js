@@ -17,21 +17,21 @@ del = function(regexp) {
 };
 
 (function() {
-	var create = function(app) {
+	function send_html(content, status_code) {
+		this.sendHeader(status_code || 200, {"Content-Type":"text/html","Content-Length":content.length});
+		this.sendBody(content);
+		this.finish();
+	}
+
+	function is_regexp(matcher) {
+		// assuming that if the matcher has a test function, it's a regexp
+		// what is a better way of differentiating a regexp from a regular function?
+		return typeof matcher.test === "function";
+	}
+
+	function create(app) {
 		return {
 			serve: function(port, host) {
-				function send_html(content, status_code) {
-					this.sendHeader(status_code || 200, {"Content-Type":"text/html","Content-Length":content.length});
-					this.sendBody(content);
-					this.finish();
-				}
-
-				function is_regexp(matcher) {
-					// assuming that if the matcher has a test function, it's a regexp
-					// what is a better way of differentiating a regexp from a regular function?
-					return typeof matcher.test === "function";
-				}
-
 				function request_handler(req, res) {
 					res.send_html = send_html;
 					for(var i = 0; i < app.length; i++) {
