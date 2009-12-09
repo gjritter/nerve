@@ -18,14 +18,16 @@ del = function(regexp) {
 };
 
 (function() {
-	function respond(response_data) {
-		var headers = {"Content-Type": "text/html", "Content-Length": (response_data.content && response_data.content.length) || response_data.length || 0}
-		for(name in response_data.headers) { headers[name] = response_data.headers[name]; }
-		this.sendHeader(response_data.status_code || 200, headers);
-		this.sendBody(response_data.content || response_data);
-		this.finish();
-	}
-
+	process.mixin(http.ServerResponse.prototype, {
+		respond: function(response_data) {
+			var headers = {"Content-Type": "text/html", "Content-Length": (response_data.content && response_data.content.length) || response_data.length || 0}
+			for(name in response_data.headers) { headers[name] = response_data.headers[name]; }
+			this.sendHeader(response_data.status_code || 200, headers);
+			this.sendBody(response_data.content || response_data);
+			this.finish();
+		}
+	});
+	
 	function is_regexp(matcher) {
 		// assuming that if the matcher has a test function, it's a regexp
 		// what is a better way of differentiating a regexp from a regular function?
@@ -34,7 +36,6 @@ del = function(regexp) {
 
 	function create(app) {
 		function request_handler(req, res) {
-			res.respond = respond;
 			for(var i = 0; i < app.length; i++) {
 				var matcher = app[i][0], handler = app[i][1],
 					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
