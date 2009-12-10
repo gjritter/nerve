@@ -21,6 +21,9 @@ It also makes use of request method matching. The first matcher will only match 
 
     	// will respond only to GET requests
     	[get(/^\/hello\/(\w+)$/), function(req, res, name) {
+    		// cookies are currently set without an expiration and
+    		// with a path of "/"
+    		res.set_cookie("name", name);
     		// respond takes a string and provides sensible defaults:
     		// Content-Type: text/html, Content-Length: string length
     		res.respond("Hello, " + name + "!");
@@ -30,7 +33,7 @@ It also makes use of request method matching. The first matcher will only match 
     	[/^\/goodbye$/, function(req, res) {
     		// respond takes an object specifying content and headers,
     		// and uses sensible defaults if not supplied
-    		res.respond({content: "Goodbye!", headers: {"Content-Type": "text/plain"}});
+    		res.respond({content: "Goodbye, " + req.get_cookie("name") + "!", headers: {"Content-Type": "text/plain"}});
     	}]
 	
     ];

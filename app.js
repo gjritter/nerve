@@ -5,6 +5,8 @@ var app = [
 
 	// will respond only to GET requests
 	[get(/^\/hello\/(\w+)$/), function(req, res, name) {
+		// cookies are currently set without an expiration and
+		// with a path of "/"
 		res.set_cookie("name", name);
 		// respond takes a string and provides sensible defaults:
 		// Content-Type: text/html, Content-Length: string length
