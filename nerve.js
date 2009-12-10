@@ -18,13 +18,32 @@ del = function(regexp) {
 };
 
 (function() {
+	process.mixin(http.IncomingMessage.prototype, {
+		get_cookie: function(name) {
+			var cookies = this.headers.cookie && this.headers.cookie.split(";");
+			while(cookie = cookies.shift()) {
+				var parts = cookie.split("=");
+				if(parts[0] === name) return parts[1];
+			}
+		}
+	});
+	
 	process.mixin(http.ServerResponse.prototype, {
 		respond: function(response_data) {
-			var headers = {"Content-Type": "text/html", "Content-Length": (response_data.content && response_data.content.length) || response_data.length || 0}
-			for(name in response_data.headers) { headers[name] = response_data.headers[name]; }
+			var headers = {
+				"Content-Type": "text/html",
+				"Content-Length": (response_data.content && response_data.content.length) || response_data.length || 0,
+			}
+			if(this.cookies) headers["Set-Cookie"] = this.cookies.join(", ");
+			for(name in response_data.headers) headers[name] = response_data.headers[name];
 			this.sendHeader(response_data.status_code || 200, headers);
 			this.sendBody(response_data.content || response_data);
 			this.finish();
+		},
+		
+		set_cookie: function(name, value) {
+			this.cookies = this.cookies || [];
+			this.cookies.push(name + "=" + value + "; path=/;");
 		}
 	});
 	
