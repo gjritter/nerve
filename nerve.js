@@ -21,7 +21,7 @@ del = function(regexp) {
 	process.mixin(http.IncomingMessage.prototype, {
 		get_cookie: function(name) {
 			var cookies = this.headers.cookie && this.headers.cookie.split(";");
-			while(cookie = cookies.shift()) {
+			while(cookie = cookies && cookies.shift()) {
 				var parts = cookie.split("=");
 				if(parts[0] === name) return parts[1];
 			}
