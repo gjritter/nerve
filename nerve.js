@@ -67,7 +67,7 @@ del = function(regexp) {
 			session: {},
 			touch: function() {
 				// TODO: replace 30 minute expiration with something configurable
-				this.expiration = (+ new Date) + 10*1000;
+				this.expiration = (+ new Date) + 30*60*1000;
 				return this;
 			}
 		}).touch();
