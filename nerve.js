@@ -56,16 +56,36 @@ del = function(regexp) {
 		// what is a better way of differentiating a regexp from a regular function?
 		return typeof matcher.test === "function";
 	}
+	
+	function get_or_create_session(req, res) {
+		var session_id = req.get_cookie("session_id");
+		if(!session_id) {
+			session_id = idgen.generate_id(22);
+			res.set_cookie("session_id", session_id);
+		}
+		sessions[session_id] = (sessions[session_id] || {
+			session: {},
+			touch: function() {
+				// TODO: replace 30 minute expiration with something configurable
+				this.expiration = (+ new Date) + 10*1000;
+				return this;
+			}
+		}).touch();
+		return sessions[session_id].session;
+	}
+	
+	function cleanup_sessions() {
+		for(session_id in sessions) {
+			if((+ new Date) > sessions[session_id].expiration) {
+				delete sessions[session_id];
+			}
+		}
+	}
 
 	function create(app) {
+		setInterval(cleanup_sessions, 1000);
 		function request_handler(req, res) {
-			var session_id = req.get_cookie("session_id");
-			if(!session_id) {
-				session_id = idgen.generate_id(22);
-				res.set_cookie("session_id", session_id);
-			}
-			sessions[session_id] = sessions[session_id] || {};
-			req.session = sessions[session_id];
+			req.session = get_or_create_session(req, res);
 			for(var i = 0; i < app.length; i++) {
 				var matcher = app[i][0], handler = app[i][1],
 					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));

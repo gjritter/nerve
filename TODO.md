@@ -1,3 +1,3 @@
 # To Do List
 
-Session Expiration
+Replace hardcoded 30 minute session expiration with something configurable.

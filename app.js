@@ -1,5 +1,4 @@
 var nerve = require("./nerve");
-var sys = require("sys");
 
 // define an application using request matcher/handler pairs
 var app = [
@@ -20,9 +19,12 @@ var app = [
 	// this handler will respond to any request method
 	[/^\/goodbye$/, function(req, res) {
 		
+		var name = req.session["name"];
+		var message = "Goodbye, " + (name || "I hardly knew thee") + "!";
+
 		// respond takes an object specifying content and headers,
 		// and uses sensible defaults if not supplied
-		res.respond({content: "Goodbye, " + req.session["name"] + "!", headers: {"Content-Type": "text/plain"}});
+		res.respond({content: message, headers: {"Content-Type": "text/plain"}});
 		
 	}]
 	
