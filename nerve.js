@@ -1,5 +1,7 @@
 var sys = require('sys');
 var http = require('http');
+var idgen = require('./idgen');
+var util = require('./util');
 
 get = function(regexp) {
 	return function() { return this.method == "GET" ? regexp : false; }
@@ -18,12 +20,14 @@ del = function(regexp) {
 };
 
 (function() {
+	var sessions = {};
+	
 	process.mixin(http.IncomingMessage.prototype, {
 		get_cookie: function(name) {
 			var cookies = this.headers.cookie && this.headers.cookie.split(";");
 			while(cookie = (cookies && cookies.shift())) {
 				var parts = cookie.split("=");
-				if(parts[0] === name) return parts[1];
+				if(parts[0].trim() === name) return parts[1];
 			}
 		}
 	});
@@ -55,6 +59,13 @@ del = function(regexp) {
 
 	function create(app) {
 		function request_handler(req, res) {
+			var session_id = req.get_cookie("session_id");
+			if(!session_id) {
+				session_id = idgen.generate_id(22);
+				res.set_cookie("session_id", session_id);
+			}
+			sessions[session_id] = sessions[session_id] || {};
+			req.session = sessions[session_id];
 			for(var i = 0; i < app.length; i++) {
 				var matcher = app[i][0], handler = app[i][1],
 					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
