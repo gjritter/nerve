@@ -2,6 +2,12 @@
 
 A microframework for [node.js](http://nodejs.org).
 
+## Features
+
+* Simple array-based DSL for request routing
+* Regular expression route matching, including passing of captured groups to route handler
+* Simple cookie and session support
+
 ## Examples
 
 ### Nodewiki
