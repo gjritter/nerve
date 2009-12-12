@@ -30,5 +30,6 @@ var app = [
 	
 ];
 
-// create and serve the application
-nerve.create(app).serve(8000);
+// create and serve the application with 10 second session duration
+// by default, sessions have a duration of 30 minutes (30*60*1000)
+nerve.create(app, {session_duration: 10*1000}).serve(8000);

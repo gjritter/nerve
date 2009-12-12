@@ -1,3 +1,3 @@
 # To Do List
 
-Replace hardcoded 30 minute session expiration with something configurable.
+* emit events where appropriate (new session, session expiration, ...)

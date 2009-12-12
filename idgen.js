@@ -1,5 +1,3 @@
-var sys = require('sys');
-
 // the "URL and Filename safe" Base 64 Alphabet
 // see http://tools.ietf.org/html/rfc3548#section-4
 var id_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';

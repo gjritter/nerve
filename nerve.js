@@ -1,7 +1,6 @@
 var sys = require('sys');
 var http = require('http');
-var idgen = require('./idgen');
-var util = require('./util');
+require('./http-state');
 
 get = function(regexp) {
 	return function() { return this.method == "GET" ? regexp : false; }
@@ -22,16 +21,6 @@ del = function(regexp) {
 (function() {
 	var sessions = {};
 	
-	process.mixin(http.IncomingMessage.prototype, {
-		get_cookie: function(name) {
-			var cookies = this.headers.cookie && this.headers.cookie.split(";");
-			while(cookie = (cookies && cookies.shift())) {
-				var parts = cookie.split("=");
-				if(parts[0].trim() === name) return parts[1];
-			}
-		}
-	});
-	
 	process.mixin(http.ServerResponse.prototype, {
 		respond: function(response_data) {
 			var headers = {
@@ -43,11 +32,6 @@ del = function(regexp) {
 			this.sendHeader(response_data.status_code || 200, headers);
 			this.sendBody(response_data.content || response_data);
 			this.finish();
-		},
-		
-		set_cookie: function(name, value) {
-			this.cookies = this.cookies || [];
-			this.cookies.push(name + "=" + value + "; path=/;");
 		}
 	});
 	
@@ -57,35 +41,9 @@ del = function(regexp) {
 		return typeof matcher.test === "function";
 	}
 	
-	function get_or_create_session(req, res) {
-		var session_id = req.get_cookie("session_id");
-		if(!session_id) {
-			session_id = idgen.generate_id(22);
-			res.set_cookie("session_id", session_id);
-		}
-		sessions[session_id] = (sessions[session_id] || {
-			session: {},
-			touch: function() {
-				// TODO: replace 30 minute expiration with something configurable
-				this.expiration = (+ new Date) + 30*60*1000;
-				return this;
-			}
-		}).touch();
-		return sessions[session_id].session;
-	}
-	
-	function cleanup_sessions() {
-		for(session_id in sessions) {
-			if((+ new Date) > sessions[session_id].expiration) {
-				delete sessions[session_id];
-			}
-		}
-	}
-
-	function create(app) {
-		setInterval(cleanup_sessions, 1000);
+	function create(app, options) {
 		function request_handler(req, res) {
-			req.session = get_or_create_session(req, res);
+			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30*60*1000});
 			for(var i = 0; i < app.length; i++) {
 				var matcher = app[i][0], handler = app[i][1],
 					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
