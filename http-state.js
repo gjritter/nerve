@@ -22,7 +22,6 @@ var idgen = require('./idgen');
 			sessions[session_id] = (sessions[session_id] || {
 				session: {},
 				touch: function() {
-					// TODO: replace 30 minute expiration with something configurable
 					this.expiration = (+ new Date) + (options.duration || 30*60*1000);
 					return this;
 				}
