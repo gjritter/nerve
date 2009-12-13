@@ -36,9 +36,7 @@ del = function(regexp) {
 	});
 	
 	function is_regexp(matcher) {
-		// assuming that if the matcher has a test function, it's a regexp
-		// what is a better way of differentiating a regexp from a regular function?
-		return typeof matcher.test === "function";
+		return matcher.constructor === RegExp;
 	}
 	
 	function create(app, options) {
