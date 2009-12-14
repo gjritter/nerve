@@ -14,6 +14,10 @@ A microframework for [node.js](http://nodejs.org).
 
 [Nodewiki](http://github.com/gjritter/nodewiki) is a tiny wiki built using Nerve and the redis-node-client.
 
+### Templates
+
+The [template.node.js](http://github.com/jazzychad/template.node.js) project includes a sample application that shows how Nerve can be used to build a web application with templates.
+
 ### Sample Application
 
 This sample application makes use of Nerve's regular-expression URI path matching to pass a "name" parameter from the URI into a handler function. This can be extended to any number of named arguments in the handler function.
