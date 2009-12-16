@@ -7,6 +7,7 @@ A microframework for [node.js](http://nodejs.org).
 * Simple array-based DSL for request routing
 * Regular expression route matching, including passing of captured groups to route handler
 * Simple cookie and session support
+* Simple configuration options for apps that use SSL
 
 ## Examples
 
@@ -24,6 +25,7 @@ This sample application makes use of Nerve's regular-expression URI path matchin
 
 It also makes use of request method matching. The first matcher will only match get requests; the second will match any request method.
 
+    var posix = require("./posix");
     var nerve = require("./nerve");
 
     // define an application using request matcher/handler pairs
@@ -56,6 +58,15 @@ It also makes use of request method matching. The first matcher will only match 
 	
     ];
 
-    // create and serve the application with 10 second session duration
-    // by default, sessions have a duration of 30 minutes (30*60*1000)
-    nerve.create(app, {session_duration: 10*1000}).serve(8000);
+    // create and serve the application with various options
+    posix.cat('server.crt').addCallback(function(cert) {
+    	posix.cat('server.key').addCallback(function(key) {
+    		nerve.create(app, {
+    			port: 8123,
+    			ssl_port: 8443,
+    			certificate: cert,
+    			private_key: key,
+    			session_duration: 10*1000
+    		}).serve();
+    	});
+    });
