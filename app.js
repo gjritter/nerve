@@ -1,3 +1,4 @@
+var posix = require("./posix");
 var nerve = require("./nerve");
 
 // define an application using request matcher/handler pairs
@@ -30,6 +31,15 @@ var app = [
 	
 ];
 
-// create and serve the application with 10 second session duration
-// by default, sessions have a duration of 30 minutes (30*60*1000)
-nerve.create(app, {session_duration: 10*1000}).serve(8000);
+// create and serve the application with various options
+posix.cat('server.crt').addCallback(function(cert) {
+	posix.cat('server.key').addCallback(function(key) {
+		nerve.create(app, {
+			port: 8123,
+			ssl_port: 8443,
+			certificate: cert,
+			private_key: key,
+			session_duration: 10*1000
+		}).serve();
+	});
+});

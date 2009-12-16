@@ -19,8 +19,6 @@ del = function(regexp) {
 };
 
 (function() {
-	var sessions = {};
-	
 	process.mixin(http.ServerResponse.prototype, {
 		respond: function(response_data) {
 			var headers = {
@@ -57,16 +55,28 @@ del = function(regexp) {
 			res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
 		}
 
-		var server = http.createServer(request_handler);
+		options = options || {};
+		if(!options.port && !options.ssl_port) options.port = 8000;
+		
+		if(options.port) {
+			var server = http.createServer(request_handler);
+		}
+		
+		if(options.ssl_port && options.private_key && options.certificate) {
+			var ssl_server = http.createServer(request_handler);
+			ssl_server.setSecure('X509_PEM', options.ca_certs, options.crl_list, options.private_key, options.certificate);
+		}
 		
 		return {
-			serve: function(port, host) {
-				server.listen(port, host);
+			serve: function() {
+				if(server) server.listen(options.port, options.host);
+				if(ssl_server) ssl_server.listen(options.ssl_port, options.host);
 				return this;
 			},
 			
 			close: function() {
-				server.close();
+				if(server) server.close();
+				if(ssl_server) ssl_server.close();
 				return this;
 			}
 		}
