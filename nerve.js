@@ -33,8 +33,8 @@ del = function(regexp) {
 		}
 	});
 	
-	function is_regexp(matcher) {
-		return matcher.constructor === RegExp;
+	function is_matcher(matcher) {
+		return matcher.constructor === RegExp || typeof matcher === 'string';
 	}
 	
 	function create(app, options) {
@@ -42,7 +42,7 @@ del = function(regexp) {
 			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30*60*1000});
 			for(var i = 0; i < app.length; i++) {
 				var matcher = app[i][0], handler = app[i][1],
-					match = req.uri.path.match(is_regexp(matcher) ? matcher : matcher.apply(req));
+					match = req.uri.path.match(is_matcher(matcher) ? matcher : matcher.apply(req));
 				if(match) {
 					try {
 						handler.apply(null, [req, res].concat(match.slice(1)));

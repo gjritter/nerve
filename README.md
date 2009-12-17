@@ -18,7 +18,7 @@ This Hello World app listens for http requests on port 8000:
     var nerve = require('./nerve');
 
     var hello = [
-    	[/^\/$/, function(req, res) {
+    	["/", function(req, res) {
     		res.respond("Hello, World!");
     	}]
     ];
