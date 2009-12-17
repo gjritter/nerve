@@ -20,7 +20,7 @@ var idgen = require('./idgen');
 				res.set_cookie("session_id", session_id);
 			}
 			sessions[session_id] = (sessions[session_id] || {
-				session: {},
+				session: {session_id: session_id},
 				touch: function() {
 					this.expiration = (+ new Date) + (options.duration || 30*60*1000);
 					return this;
