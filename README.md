@@ -11,6 +11,35 @@ A microframework for [node.js](http://nodejs.org).
 
 ## Examples
 
+### Hello World
+
+This Hello World app listens for http requests on port 8000:
+
+    var nerve = require('./nerve');
+
+    var hello = [
+    	[/^\/$/, function(req, res) {
+    		res.respond("Hello, World!");
+    	}]
+    ];
+
+    nerve.create(hello).serve();
+
+You can pass options to the create method to control the port and scheme. Here's how to serve the above Hello World app using https on port 8443 (assuming you have a certificate and private key):
+
+    var posix = require('posix');
+
+    // read in cert and private key, and listen to https requests on port 8443
+    posix.cat('server.crt').addCallback(function(cert) {
+    	posix.cat('server.key').addCallback(function(key) {
+    		nerve.create(hello, {
+    			ssl_port: 8443,
+    			certificate: cert,
+    			private_key: key
+    		}).serve();
+    	});
+    });
+
 ### Nodewiki
 
 [Nodewiki](http://github.com/gjritter/nodewiki) is a tiny wiki built using Nerve and the redis-node-client.
@@ -24,6 +53,8 @@ The [template.node.js](http://github.com/jazzychad/template.node.js) project inc
 This sample application makes use of Nerve's regular-expression URI path matching to pass a "name" parameter from the URI into a handler function. This can be extended to any number of named arguments in the handler function.
 
 It also makes use of request method matching. The first matcher will only match get requests; the second will match any request method.
+
+The application stores the user's name in the session, so that it can be used in subsequent responses.
 
     var posix = require("./posix");
     var nerve = require("./nerve");
