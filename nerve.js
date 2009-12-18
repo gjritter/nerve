@@ -33,19 +33,27 @@ del = function(regexp) {
 		}
 	});
 	
-	function is_matcher(matcher) {
-		return matcher.constructor === RegExp || typeof matcher === 'string';
+	function match_request(matcher, req) {
+		if(typeof matcher === "string") {
+			return (matcher === req.uri.path);
+		} else if(matcher.constructor === RegExp) {
+			return req.uri.path.match(matcher);
+		} else {
+			return req.uri.path.match(matcher.apply(req));
+		}
 	}
 	
 	function create(app, options) {
 		function request_handler(req, res) {
 			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30*60*1000});
 			for(var i = 0; i < app.length; i++) {
-				var matcher = app[i][0], handler = app[i][1],
-					match = req.uri.path.match(is_matcher(matcher) ? matcher : matcher.apply(req));
+				var matcher = app[i][0], handler = app[i][1], handler_args = [req, res], match = match_request(matcher, req);
 				if(match) {
 					try {
-						handler.apply(null, [req, res].concat(match.slice(1)));
+						if(typeof match.slice === "function") {
+							handler_args = handler_args.concat(match.slice(1));
+						}
+						handler.apply(null, handler_args);
 					} catch(e) {
 						res.respond({content: '<html><head><title>Exception</title></head><body><h1>Exception</h1><pre>' + sys.inspect(e) + '</pre></body></html>', status_code: 501});
 					}
