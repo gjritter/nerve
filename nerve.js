@@ -1,6 +1,6 @@
 var sys = require('sys');
 var http = require('http');
-require('./http-state');
+require('./http_state');
 
 get = function(regexp) {
 	return function() { return this.method == "GET" ? regexp : false; }
