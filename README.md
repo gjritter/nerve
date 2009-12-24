@@ -57,7 +57,8 @@ It also makes use of request method matching. The first matcher will only match 
 The application stores the user's name in the session, so that it can be used in subsequent responses.
 
     var posix = require("./posix");
-    var nerve = require("./nerve");
+    var nerve = require("./nerve"),
+      get = nerve.get;
 
     // define an application using request matcher/handler pairs
     var app = [

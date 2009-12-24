@@ -1,5 +1,6 @@
-var posix = require("posix");
-var nerve = require("./nerve");
+var posix = require("posix"),
+	nerve = require("./nerve"),
+	get = nerve.get;
 
 // define an application using request matcher/handler pairs
 var app = [

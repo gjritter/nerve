@@ -2,22 +2,6 @@ var sys = require('sys');
 var http = require('http');
 require('./http_state');
 
-get = function(regexp) {
-	return function() { return this.method == "GET" ? regexp : false; }
-};
-
-post = function(regexp) {
-	return function() { return this.method == "POST" ? regexp : false; }
-};
-
-put = function(regexp) {
-	return function() { return this.method == "PUT" ? regexp : false; }
-};
-
-del = function(regexp) {
-	return function() { return this.method == "DELETE" ? regexp : false; }
-};
-
 (function() {
 	process.mixin(http.ServerResponse.prototype, {
 		respond: function(response_data) {
@@ -43,6 +27,22 @@ del = function(regexp) {
 		}
 	}
 	
+	function get(regexp) {
+		return function() { return this.method == "GET" ? regexp : false; }
+	};
+
+	function post(regexp) {
+		return function() { return this.method == "POST" ? regexp : false; }
+	};
+
+	function put(regexp) {
+		return function() { return this.method == "PUT" ? regexp : false; }
+	};
+
+	function del(regexp) {
+		return function() { return this.method == "DELETE" ? regexp : false; }
+	};
+
 	function create(app, options) {
 		function request_handler(req, res) {
 			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30*60*1000});
@@ -90,5 +90,9 @@ del = function(regexp) {
 		}
 	};
 	
+	exports.get = get;
+	exports.post = post;
+	exports.put = put;
+	exports.del = del;
 	exports.create = create;
 })();

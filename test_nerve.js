@@ -5,8 +5,14 @@
 	var test = require('mjsunit'),
 		http = require('http'),
 		nerve = require('./nerve'),
+		get = nerve.get,
+		post = nerve.post,
+		put = nerve.put,
+		del = nerve.del,
 		pending_callbacks = 0,
 		test_server;
+	
+	// helpers
 	
 	function assert_response(response, expected_body, callback) {
 		var body = '';
@@ -16,7 +22,17 @@
 		response.addListener('complete', function () {
 			test.assertEquals(expected_body, body);
 		});
-		callback();
+		if(typeof callback === 'function') {
+			callback();
+		} else if(typeof callback === 'undefined') {
+			receive_callback();
+		}
+	}
+	
+	function assert_not_found(res) {
+		test.assertEquals(404, res.statusCode);
+		test.assertEquals('text/html', res.headers['content-type']);
+		assert_response(res, '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>');
 	}
 	
 	function expect_callback() {
@@ -29,9 +45,17 @@
 	
 	// create the server
 	
-	test_server = nerve.create([['/', function (req, res) {
-		res.respond('Hello, World!');
-	}]]);
+	test_server = nerve.create([
+		['/', function (req, res) {
+			res.respond('Hello, World!');
+		}],
+		[get(/^\/get$/), function(req, res) {
+			res.respond('GET matcher');
+		}],
+		[get("/getstring"), function(req, res) {
+			res.respond('GET string matcher');
+		}]
+	]);
 	test_server.serve();
 	
 	// test the server
@@ -43,9 +67,7 @@
 		req.finish(function (res) {
 			test.assertEquals(200, res.statusCode);
 			test.assertEquals('text/html', res.headers['content-type']);
-			assert_response(res, 'Hello, World!', function () {
-				receive_callback();
-			});
+			assert_response(res, 'Hello, World!');
 		});
 	}());
 	
@@ -54,11 +76,83 @@
 			req = client.request('GET', '/unmatched');
 		expect_callback();
 		req.finish(function (res) {
-			test.assertEquals(404, res.statusCode);
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_get_to_get_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('GET', '/get');
+		expect_callback();
+		req.finish(function (res) {
+			test.assertEquals(200, res.statusCode);
 			test.assertEquals('text/html', res.headers['content-type']);
-			assert_response(res, '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', function () {
-				receive_callback();
-			});
+			assert_response(res, 'GET matcher');
+		});
+	}());
+	
+	(function test_post_to_get_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('POST', '/get');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_put_to_get_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('PUT', '/get');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_delete_to_get_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('DELETE', '/get');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_get_to_get_string_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('GET', '/getstring');
+		expect_callback();
+		req.finish(function (res) {
+			test.assertEquals(200, res.statusCode);
+			test.assertEquals('text/html', res.headers['content-type']);
+			assert_response(res, 'GET string matcher');
+		});
+	}());
+	
+	(function test_post_to_get_string_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('POST', '/getstring');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_put_to_get_string_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('PUT', '/getstring');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
+		});
+	}());
+	
+	(function test_delete_to_get_string_matcher() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('DELETE', '/getstring');
+		expect_callback();
+		req.finish(function (res) {
+			assert_not_found(res);
 		});
 	}());
 	
