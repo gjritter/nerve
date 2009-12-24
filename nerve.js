@@ -6,10 +6,10 @@ require('./http_state');
 	process.mixin(http.ServerResponse.prototype, {
 		respond: function(response_data) {
 			var headers = {
-				"Content-Type": "text/html",
-				"Content-Length": (response_data.content && response_data.content.length) || response_data.length || 0,
+				'Content-Type': 'text/html',
+				'Content-Length': (response_data.content && response_data.content.length) || response_data.length || 0,
 			}
-			if(this.cookies) headers["Set-Cookie"] = this.cookies.join(", ");
+			if(this.cookies) headers['Set-Cookie'] = this.cookies.join(', ');
 			for(name in response_data.headers) headers[name] = response_data.headers[name];
 			this.sendHeader(response_data.status_code || 200, headers);
 			this.sendBody(response_data.content || response_data);
@@ -18,7 +18,7 @@ require('./http_state');
 	});
 	
 	function match_request(matcher, req) {
-		if(typeof matcher === "string") {
+		if(typeof matcher === 'string') {
 			return (matcher === req.uri.path);
 		} else if(matcher.constructor === RegExp) {
 			return req.uri.path.match(matcher);
@@ -27,20 +27,51 @@ require('./http_state');
 		}
 	}
 	
-	function get(regexp) {
-		return function() { return this.method == "GET" ? regexp : false; }
+	function to_regexp(pattern) {
+		if(pattern.constructor === RegExp) {
+			return pattern;
+		} else {
+			return new RegExp('^' + pattern + '$');
+		}
+	}
+	function get(pattern) {
+		return function() {
+			if(this.method !== 'GET') {
+				return false;
+			} else {
+				return to_regexp(pattern);
+			}
+		}
 	};
 
-	function post(regexp) {
-		return function() { return this.method == "POST" ? regexp : false; }
+	function post(pattern) {
+		return function() {
+			if(this.method !== 'POST') {
+				return false;
+			} else {
+				return to_regexp(pattern);
+			}
+		}
 	};
 
-	function put(regexp) {
-		return function() { return this.method == "PUT" ? regexp : false; }
+	function put(pattern) {
+		return function() {
+			if(this.method !== 'PUT') {
+				return false;
+			} else {
+				return to_regexp(pattern);
+			}
+		}
 	};
 
-	function del(regexp) {
-		return function() { return this.method == "DELETE" ? regexp : false; }
+	function del(pattern) {
+		return function() {
+			if(this.method !== 'DELETE') {
+				return false;
+			} else {
+				return to_regexp(pattern);
+			}
+		}
 	};
 
 	function create(app, options) {
@@ -50,7 +81,7 @@ require('./http_state');
 				var matcher = app[i][0], handler = app[i][1], handler_args = [req, res], match = match_request(matcher, req);
 				if(match) {
 					try {
-						if(typeof match.slice === "function") {
+						if(typeof match.slice === 'function') {
 							handler_args = handler_args.concat(match.slice(1));
 						}
 						handler.apply(null, handler_args);
