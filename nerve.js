@@ -19,11 +19,11 @@ require('./http_state');
 	
 	function match_request(matcher, req) {
 		if(typeof matcher === 'string') {
-			return (matcher === req.uri.path);
+			return (matcher === req.url);
 		} else if(matcher.constructor === RegExp) {
-			return req.uri.path.match(matcher);
+			return req.url.match(matcher);
 		} else {
-			return req.uri.path.match(matcher.apply(req));
+			return req.url.match(matcher.apply(req));
 		}
 	}
 	
