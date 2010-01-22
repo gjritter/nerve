@@ -7,7 +7,6 @@ A microframework for [node.js](http://nodejs.org).
 * Simple array-based DSL for request routing
 * Regular expression route matching, including passing of captured groups to route handler
 * Simple cookie and session support
-* Simple configuration options for apps that use SSL
 
 ## Examples
 
@@ -23,22 +22,7 @@ This Hello World app listens for http requests on port 8000:
     	}]
     ];
 
-    nerve.create(hello).serve();
-
-You can pass options to the create method to control the port and scheme. Here's how to serve the above Hello World app using https on port 8443 (assuming you have a certificate and private key):
-
-    var posix = require('posix');
-
-    // read in cert and private key, and listen to https requests on port 8443
-    posix.cat('server.crt').addCallback(function(cert) {
-    	posix.cat('server.key').addCallback(function(key) {
-    		nerve.create(hello, {
-    			ssl_port: 8443,
-    			certificate: cert,
-    			private_key: key
-    		}).serve();
-    	});
-    });
+    nerve.create(hello).listen(8000);
 
 ### Nodewiki
 
@@ -90,15 +74,5 @@ The application stores the user's name in the session, so that it can be used in
 	
     ];
 
-    // create and serve the application with various options
-    posix.cat('server.crt').addCallback(function(cert) {
-    	posix.cat('server.key').addCallback(function(key) {
-    		nerve.create(app, {
-    			port: 8123,
-    			ssl_port: 8443,
-    			certificate: cert,
-    			private_key: key,
-    			session_duration: 10*1000
-    		}).serve();
-    	});
-    });
+    // create and serve the application with 10 second session duration
+    nerve.create(app, {session_duration: 10000}).listen(8000);

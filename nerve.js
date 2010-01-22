@@ -75,6 +75,7 @@ require('./http_state');
 	};
 
 	function create(app, options) {
+		options = options || {};
 		function request_handler(req, res) {
 			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30*60*1000});
 			for(var i = 0; i < app.length; i++) {
@@ -94,31 +95,7 @@ require('./http_state');
 			res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
 		}
 
-		options = options || {};
-		if(!options.port && !options.ssl_port) options.port = 8000;
-		
-		if(options.port) {
-			var server = http.createServer(request_handler);
-		}
-		
-		if(options.ssl_port && options.private_key && options.certificate) {
-			var ssl_server = http.createServer(request_handler);
-			ssl_server.setSecure('X509_PEM', options.ca_certs, options.crl_list, options.private_key, options.certificate);
-		}
-		
-		return {
-			serve: function() {
-				if(server) server.listen(options.port, options.host);
-				if(ssl_server) ssl_server.listen(options.ssl_port, options.host);
-				return this;
-			},
-			
-			close: function() {
-				if(server) server.close();
-				if(ssl_server) ssl_server.close();
-				return this;
-			}
-		}
+		return http.createServer(request_handler);
 	};
 	
 	exports.get = get;

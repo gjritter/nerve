@@ -65,7 +65,7 @@
 			res.respond('DEL string matcher');
 		}]
 	]);
-	test_server.serve();
+	test_server.listen(8000);
 	
 	// test the server
 	

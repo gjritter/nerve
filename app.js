@@ -1,4 +1,5 @@
-var posix = require("posix"),
+var sys = require('sys'),
+	posix = require("posix"),
 	nerve = require("./nerve"),
 	get = nerve.get;
 
@@ -32,15 +33,5 @@ var app = [
 	
 ];
 
-// create and serve the application with various options
-posix.cat('server.crt').addCallback(function(cert) {
-	posix.cat('server.key').addCallback(function(key) {
-		nerve.create(app, {
-			port: 8123,
-			ssl_port: 8443,
-			certificate: cert,
-			private_key: key,
-			session_duration: 10*1000
-		}).serve();
-	});
-});
+// create and serve the application with 10 second session duration
+nerve.create(app, {session_duration: 10000}).listen(8000);
