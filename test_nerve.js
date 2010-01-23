@@ -14,6 +14,14 @@
 	
 	// helpers
 	
+	function expect_callback() {
+		pending_callbacks += 1;
+	}
+
+	function receive_callback() {
+		pending_callbacks -= 1;
+	}
+	
 	function assert_response(response, expected_body, callback) {
 		var body = '';
 		response.addListener('body', function (chunk) {
@@ -22,9 +30,9 @@
 		response.addListener('complete', function () {
 			test.assertEquals(expected_body, body);
 		});
-		if(typeof callback === 'function') {
+		if (typeof callback === 'function') {
 			callback();
-		} else if(typeof callback === 'undefined') {
+		} else if (typeof callback === 'undefined') {
 			receive_callback();
 		}
 	}
@@ -35,33 +43,25 @@
 		assert_response(res, '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>');
 	}
 	
-	function expect_callback() {
-		pending_callbacks += 1;
-	}
-
-	function receive_callback() {
-		pending_callbacks -= 1;
-	}
-	
 	// create the server
 	
 	test_server = nerve.create([
 		['/', function (req, res) {
 			res.respond('Hello, World!');
 		}],
-		[get(/^\/get$/), function(req, res) {
+		[get(/^\/get$/), function (req, res) {
 			res.respond('GET matcher');
 		}],
-		[get('/getstring'), function(req, res) {
+		[get('/getstring'), function (req, res) {
 			res.respond('GET string matcher');
 		}],
-		[post('/poststring'), function(req, res) {
+		[post('/poststring'), function (req, res) {
 			res.respond('POST string matcher');
 		}],
-		[put('/putstring'), function(req, res) {
+		[put('/putstring'), function (req, res) {
 			res.respond('PUT string matcher');
 		}],
-		[del('/delstring'), function(req, res) {
+		[del('/delstring'), function (req, res) {
 			res.respond('DEL string matcher');
 		}]
 	]);
