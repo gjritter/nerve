@@ -35,5 +35,5 @@
 		];
 
 	// create and serve the application with 10 second session duration
-	nerve.create(app, {session_duration: 10000}).listen(8000);
+	nerve.create(app, {session_duration: 10000, document_root: '.'}).listen(8000);
 }());

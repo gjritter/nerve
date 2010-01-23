@@ -64,7 +64,7 @@
 		[del('/delstring'), function (req, res) {
 			res.respond('DEL string matcher');
 		}]
-	]);
+	], {document_root: '.'});
 	test_server.listen(8000);
 	
 	// test the server
@@ -312,6 +312,17 @@
 		expect_callback();
 		req.finish(function (res) {
 			assert_not_found(res);
+		});
+	}());
+	
+	(function test_static_file() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('GET', '/test.html');
+		expect_callback();
+		req.finish(function (res) {
+			test.assertEquals(200, res.statusCode);
+			test.assertEquals('text/html', res.headers['content-type']);
+			assert_response(res, 'hello world\n');
 		});
 	}());
 	

@@ -3,7 +3,11 @@
 
 (function () {
 	var sys = require('sys'),
-		http = require('http');
+		http = require('http'),
+		url = require('url'),
+		path = require('path'),
+		posix = require('posix'),
+		mime = require('./mime');
 	require('./http_state');
 
 	process.mixin(http.ServerResponse.prototype, {
@@ -21,7 +25,7 @@
 				}
 			}
 			this.sendHeader(response_data.status_code || 200, headers);
-			this.sendBody(response_data.content || response_data);
+			this.sendBody(response_data.content || response_data, 'binary');
 			this.finish();
 		}
 	});
@@ -85,7 +89,7 @@
 	}
 
 	function create(app, options) {
-		var matcher, handler, handler_args, match;
+		var matcher, handler, handler_args, match, pathname;
 		options = options || {};
 		function request_handler(req, res) {
 			req.session = req.get_or_create_session(req, res, {duration: options.session_duration || 30 * 60 * 1000});
@@ -106,7 +110,23 @@
 					return;
 				}
 			}
-			res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
+			// no matching handler found; check for file if document_root option provided
+			if(options.document_root) {
+				pathname = options.document_root + unescape(url.parse(req.url).pathname).replace(/\.{2,}\//g, './');
+				path.exists(pathname, function (exists) {
+					if (exists) {
+						posix.cat(pathname, 'binary').addCallback(function (content) {
+							res.respond({content: content, headers: {'Content-Type': mime.mime_type(pathname)}});
+						}).addErrback(function (e) {
+							res.respond({content: '<html><head><title>Exception</title></head><body><h1>Exception</h1><pre>' + sys.inspect(e) + '</pre></body></html>', status_code: 501});
+						});
+					} else {
+						res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
+					}
+				});
+			} else {
+				res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
+			}
 		}
 
 		return http.createServer(request_handler);
