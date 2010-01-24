@@ -88,6 +88,20 @@
 		};
 	}
 
+	function serve_static_file(pathname, res) {
+		path.exists(pathname, function (exists) {
+			if (exists) {
+				posix.cat(pathname, 'binary').addCallback(function (content) {
+					res.respond({content: content, headers: {'Content-Type': mime.mime_type(pathname)}});
+				}).addErrback(function (e) {
+					res.respond({content: '<html><head><title>Exception</title></head><body><h1>Exception</h1><pre>' + sys.inspect(e) + '</pre></body></html>', status_code: 501});
+				});
+			} else {
+				res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
+			}
+		});
+	}
+
 	function create(app, options) {
 		var matcher, handler, handler_args, match, pathname;
 		options = options || {};
@@ -113,17 +127,7 @@
 			// no matching handler found; check for file if document_root option provided
 			if(options.document_root) {
 				pathname = options.document_root + unescape(url.parse(req.url).pathname).replace(/\.{2,}\//g, './');
-				path.exists(pathname, function (exists) {
-					if (exists) {
-						posix.cat(pathname, 'binary').addCallback(function (content) {
-							res.respond({content: content, headers: {'Content-Type': mime.mime_type(pathname)}});
-						}).addErrback(function (e) {
-							res.respond({content: '<html><head><title>Exception</title></head><body><h1>Exception</h1><pre>' + sys.inspect(e) + '</pre></body></html>', status_code: 501});
-						});
-					} else {
-						res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
-					}
-				});
+				serve_static_file(pathname, res);
 			} else {
 				res.respond({content: '<html><head><title>Not Found</title></head><body><h1>Not Found</h1></body></html>', status_code: 404});
 			}
