@@ -4,7 +4,7 @@
 (function () {
 	var test = require('mjsunit'),
 		http = require('http'),
-		nerve = require('./nerve'),
+		nerve = require('../lib/nerve'),
 		get = nerve.get,
 		post = nerve.post,
 		put = nerve.put,

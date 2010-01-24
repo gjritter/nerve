@@ -2,7 +2,7 @@
 'use strict';
 
 (function () {
-	var nerve = require("./nerve"),
+	var nerve = require("../lib/nerve"),
 		get = nerve.get,
 		// define an application using request matcher/handler pairs
 		app = [
