@@ -358,5 +358,5 @@
 	setTimeout(function () {
 		test.assertEquals(0, pending_callbacks);
 		process.exit();
-	}, 50);
+	}, 100);
 }());
