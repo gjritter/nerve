@@ -352,6 +352,17 @@
 		});
         req.close();
 	}());
+
+	(function test_read_dir() {
+		var client = http.createClient(8000, '127.0.0.1'),
+			req = client.request('GET', '/test_dir');
+		expect_callback();
+		req.addListener( 'response', function(res) {
+			test.assertEquals(501, res.statusCode);
+			receive_callback();
+		});
+		req.close();
+	}());
 	
 	// assert that all callbacks were called within the alloted time and exit
 	
