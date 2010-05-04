@@ -78,7 +78,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'Hello, World!');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_unmatched_request_string() {
@@ -88,7 +88,7 @@
 		req.addListener( 'response', function (res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_get_to_get_matcher() {
@@ -100,7 +100,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'GET matcher');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_post_to_get_matcher() {
@@ -110,7 +110,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_put_to_get_matcher() {
@@ -120,7 +120,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_delete_to_get_matcher() {
@@ -130,7 +130,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_get_to_get_string_matcher() {
@@ -142,7 +142,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'GET string matcher');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_post_to_get_string_matcher() {
@@ -152,7 +152,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_put_to_get_string_matcher() {
@@ -162,7 +162,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_delete_to_get_string_matcher() {
@@ -172,7 +172,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_nonmatching_get_to_get_string_matcher() {
@@ -182,7 +182,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_post_to_post_string_matcher() {
@@ -194,7 +194,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'POST string matcher');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_get_to_post_string_matcher() {
@@ -204,7 +204,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_put_to_post_string_matcher() {
@@ -214,7 +214,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_delete_to_post_string_matcher() {
@@ -224,7 +224,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_nonmatching_post_to_post_string_matcher() {
@@ -234,7 +234,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_put_to_put_string_matcher() {
@@ -246,7 +246,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'PUT string matcher');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_get_to_put_string_matcher() {
@@ -256,7 +256,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_post_to_put_string_matcher() {
@@ -266,7 +266,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_delete_to_put_string_matcher() {
@@ -276,7 +276,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_nonmatching_put_to_put_string_matcher() {
@@ -286,7 +286,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_del_to_del_string_matcher() {
@@ -298,7 +298,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'DEL string matcher');
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_get_to_del_string_matcher() {
@@ -308,7 +308,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_post_to_del_string_matcher() {
@@ -318,7 +318,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_put_to_del_string_matcher() {
@@ -328,7 +328,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_nonmatching_del_to_del_string_matcher() {
@@ -338,7 +338,7 @@
 		req.addListener( 'response', function(res) {
 			assert_not_found(res);
 		});
-        req.close();
+        req.end();
 	}());
 	
 	(function test_static_file() {
@@ -350,7 +350,7 @@
 			test.assertEquals('text/html', res.headers['content-type']);
 			assert_response(res, 'hello world\n');
 		});
-        req.close();
+        req.end();
 	}());
 
 	(function test_read_dir() {
@@ -361,7 +361,7 @@
 			test.assertEquals(501, res.statusCode);
 			receive_callback();
 		});
-		req.close();
+		req.end();
 	}());
 	
 	// assert that all callbacks were called within the alloted time and exit
