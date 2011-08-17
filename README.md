@@ -70,7 +70,13 @@ The application stores the user's name in the session, so that it can be used in
     		// and uses sensible defaults if not supplied
     		res.respond({content: message, headers: {"Content-Type": "text/plain"}});
 		
-    	}]
+    	}],
+
+        ['/abc/:username/:post_id', function (req, res, params) {
+
+            // params = { username: string, post_id: string }
+
+        }]
 	
     ];
 
