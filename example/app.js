@@ -8,15 +8,15 @@
 		app = [
 
 			// this handler will only respond to GET requests
-			[get(/^\/hello\/(\w+)$/), function (req, res, name) {
+			[get(/^\/hello\/(\w+)$/), function (req, res, params) {
 		
 				// the session is available on every request; it currently
 				// lasts for the browser session, but will soon be configurable.
-				req.session.name = name;
+				req.session.name = params[1];
 		
 				// respond takes a string and provides sensible defaults:
 				// Content-Type: text/html, Content-Length: string length
-				res.respond("Hello, " + name + "!");
+				res.respond("Hello, " + params[1] + "!");
 		
 			}],
 	
